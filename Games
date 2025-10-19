@@ -1,0 +1,1936 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مكتبة ألعاب PS4</title>
+    <style>
+        /* أنماط نظام الدخول الجديد */
+        .login-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29, #2a255e, #24243e);
+            padding: 20px;
+        }
+        
+        .login-box {
+            background: rgba(30, 30, 46, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        
+        .login-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            color: #ffffff;
+        }
+        
+        .login-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .login-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #b0b0b0;
+        }
+        
+        .login-form input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(45, 45, 45, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .login-form input:focus {
+            outline: none;
+            border-color: #0095ff;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: #0070cc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            background: #0059a3;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+
+        /* الأنماط الأصلية للكود - لم تتغير */
+        :root {
+            --primary: #0070cc;
+            --primary-dark: #0059a3;
+            --secondary: #9542f5;
+            --dark-bg: #121212;
+            --dark-surface: #1e1e1e;
+            --dark-card: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent: #0095ff;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29, #2a255e, #24243e);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 70px;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* شريط البحث */
+        .search-bar {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px 20px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .search-bar input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 16px;
+            padding: 5px 10px;
+            outline: none;
+        }
+
+        .search-bar input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        /* شريط المهام السفلي */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--dark-surface);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .nav-item.active {
+            background: var(--glass-bg);
+            color: var(--accent);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item span {
+            font-size: 12px;
+        }
+
+        /* الصفحات */
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* شبكة الألعاب */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .game-card {
+            background: var(--dark-card);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .game-cover {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .game-title {
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .has-update-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        /* النافذة المنبثقة */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--dark-surface);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .game-details {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+        }
+
+        .download-section {
+            margin-top: 20px;
+        }
+
+        .download-section h3 {
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        .download-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .download-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .download-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .download-btn span {
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .update-btn {
+            background: #f39c12;
+            color: white;
+        }
+
+        /* صفحة الإعدادات */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .setting-card {
+            background: var(--dark-card);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .setting-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .setting-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        /* نماذج الإدخال */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            background: var(--dark-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .checkbox-group, .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-group input, .checkbox-container input {
+            margin-left: 10px;
+        }
+
+        .checkbox-container label {
+            margin-left: 5px;
+            margin-right: 15px;
+            white-space: nowrap;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* صفحة السلاسل */
+        .series-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .series-card {
+            background: var(--dark-card);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .series-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .series-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        /* صفحة التحديثات */
+        .updates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        /* التحديثات كبطاقات منفصلة */
+        .update-card {
+            background: var(--dark-card);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .update-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .update-cover {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .update-title {
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .update-version {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #f39c12;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* التجاوبية */
+        @media (max-width: 768px) {
+            .games-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+            
+            .game-cover {
+                height: 180px;
+            }
+            
+            .download-buttons {
+                flex-direction: column;
+            }
+            
+            .settings-grid, .series-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .games-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .modal-content {
+                margin: 10px;
+            }
+        }
+
+        /* تحسينات للتصنيفات المتعددة */
+        .categories-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .category-tag {
+            background: var(--primary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        /* تحسينات لرفع الصور */
+        .image-upload-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .image-preview {
+            max-width: 200px;
+            max-height: 280px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        /* تحسينات للغات المتعددة */
+        .languages-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        /* أنماط جديدة لميزة الرموز */
+        .code-display {
+            background: var(--dark-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+            font-family: monospace;
+            font-size: 18px;
+            letter-spacing: 2px;
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .code-details {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .code-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .active-status {
+            background: #27ae60;
+            color: white;
+        }
+
+        .expired-status {
+            background: #e74c3c;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- قسم الدخول الجديد -->
+    <section class="login-section" id="login-section">
+        <div class="login-box">
+            <h2 class="login-title">مكتبة الألعاب</h2>
+            <form class="login-form" id="login-form">
+                <div class="form-group">
+                    <label for="username">اسم المستخدم:</label>
+                    <input type="text" id="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">كلمة المرور:</label>
+                    <input type="password" id="password" required>
+                </div>
+                
+                <button type="submit" class="login-btn">تسجيل الدخول</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- النظام الأصلي - مخفي في البداية -->
+    <div id="main-system" class="hidden">
+        <div class="container">
+            <!-- شريط البحث -->
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="ابحث عن لعبة...">
+            </div>
+
+            <!-- الصفحات -->
+            <div id="homePage" class="page active">
+                <h2>جميع الألعاب</h2>
+                <div class="games-grid" id="gamesGrid">
+                    <!-- سيتم إضافة الألعاب هنا ديناميكيًا -->
+                </div>
+            </div>
+
+            <div id="seriesPage" class="page">
+                <h2>السلاسل</h2>
+                <div class="series-grid" id="seriesGrid">
+                    <!-- سيتم إضافة السلاسل هنا ديناميكيًا -->
+                </div>
+            </div>
+
+            <div id="updatesPage" class="page">
+                <h2>التحديثات</h2>
+                <div class="updates-grid" id="updatesGrid">
+                    <!-- سيتم إضافة التحديثات هنا ديناميكيًا -->
+                </div>
+            </div>
+
+            <div id="settingsPage" class="page">
+                <h2>الإعدادات</h2>
+                <div class="settings-grid">
+                    <div class="setting-card" id="addGameBtn">
+                        <div class="setting-icon">➕</div>
+                        <h3>إضافة لعبة جديدة</h3>
+                    </div>
+                    <div class="setting-card" id="deleteGameBtn">
+                        <div class="setting-icon">🗑️</div>
+                        <h3>حذف لعبة</h3>
+                    </div>
+                    <div class="setting-card" id="addUpdateBtn">
+                        <div class="setting-icon">🔄</div>
+                        <h3>إضافة تحديث</h3>
+                    </div>
+                    <div class="setting-card" id="exportDataBtn">
+                        <div class="setting-icon">📤</div>
+                        <h3>تصدير البيانات</h3>
+                    </div>
+                    <div class="setting-card" id="importDataBtn">
+                        <div class="setting-icon">📥</div>
+                        <h3>استيراد البيانات</h3>
+                    </div>
+                    <!-- إضافة خيار إنشاء رمز جديد -->
+                    <div class="setting-card" id="createCodeBtn">
+                        <div class="setting-icon">🔑</div>
+                        <h3>إنشاء رمز تنشيط</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- شريط المهام السفلي -->
+        <div class="bottom-nav">
+            <div class="nav-item active" data-page="homePage">
+                <i>🏠</i>
+                <span>البيت</span>
+            </div>
+            <div class="nav-item" data-page="seriesPage">
+                <i>🧩</i>
+                <span>السلاسل</span>
+            </div>
+            <div class="nav-item" data-page="updatesPage">
+                <i>🔄</i>
+                <span>التحديثات</span>
+            </div>
+            <div class="nav-item" data-page="settingsPage">
+                <i>⚙️</i>
+                <span>الإعدادات</span>
+            </div>
+        </div>
+
+        <!-- نافذة تفاصيل اللعبة -->
+        <div class="modal" id="gameModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalGameTitle">اسم اللعبة</h2>
+                    <button class="close-btn" id="closeModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="game-details" id="gameDetails">
+                        <!-- سيتم تعبئة التفاصيل هنا ديناميكيًا -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- نافذة إضافة/تعديل لعبة -->
+        <div class="modal" id="gameFormModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="formModalTitle">إضافة لعبة جديدة</h2>
+                    <button class="close-btn" id="closeFormModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="gameForm">
+                        <input type="hidden" id="gameId">
+                        
+                        <div class="form-group">
+                            <label for="gameName">اسم اللعبة</label>
+                            <input type="text" id="gameName" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="gameImage">رفع صورة اللعبة</label>
+                            <input type="file" id="gameImageUpload" class="form-control" accept="image/*">
+                            <input type="text" id="gameImage" class="form-control" placeholder="أو رابط الصورة" style="margin-top: 10px;">
+                            <img id="imagePreview" class="image-preview" src="" alt="معاينة الصورة">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="gameDescription">الوصف</label>
+                            <textarea id="gameDescription" class="form-control" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>التصنيفات (يمكن اختيار أكثر من واحد)</label>
+                            <div class="checkbox-container">
+                                <label><input type="checkbox" name="category" value="اكشن"> أكشن</label>
+                                <label><input type="checkbox" name="category" value="مغامرات"> مغامرات</label>
+                                <label><input type="checkbox" name="category" value="رياضة"> رياضة</label>
+                                <label><input type="checkbox" name="category" value="سباقات"> سباقات</label>
+                                <label><input type="checkbox" name="category" value="رعب"> رعب</label>
+                                <label><input type="checkbox" name="category" value="استراتيجية"> استراتيجية</label>
+                                <label><input type="checkbox" name="category" value="قتال"> قتال</label>
+                                <label><input type="checkbox" name="category" value="منصات"> منصات</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="gamePlatform">المنصة</label>
+                            <select id="gamePlatform" class="form-control">
+                                <option value="PS4">PS4</option>
+                                <option value="PC">PC</option>
+                                <option value="PS4/PC">PS4/PC</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="gamePerspective">منظور اللعبة</label>
+                            <select id="gamePerspective" class="form-control">
+                                <option value="اول شخص">أول شخص</option>
+                                <option value="ثالث شخص">ثالث شخص</option>
+                                <option value="أعلى أسفل">أعلى أسفل</option>
+                                <option value="جانبي">جانبي</option>
+                                <option value="متنوع">متنوع</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="gamePlayStyle">أسلوب اللعب</label>
+                            <select id="gamePlayStyle" class="form-control">
+                                <option value="مغامرة قصصية">مغامرة قصصية</option>
+                                <option value="عالم مفتوح">عالم مفتوح</option>
+                                <option value="خطي">خطي</option>
+                                <option value="منافسة">منافسة</option>
+                                <option value="تعاوني">تعاوني</option>
+                                <option value="لعب فردي">لعب فردي</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="gameSeries">السلسلة (اختياري)</label>
+                            <input type="text" id="gameSeries" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>حجم اللعبة</label>
+                            <div class="form-group">
+                                <label for="psSize">حجم PS4 (GB)</label>
+                                <input type="number" id="psSize" class="form-control" placeholder="مثال: 50">
+                            </div>
+                            <div class="form-group">
+                                <label for="pcSize">حجم PC (GB)</label>
+                                <input type="number" id="pcSize" class="form-control" placeholder="مثال: 60">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>لغات الدبلجة (يمكن اختيار أكثر من واحدة)</label>
+                            <div class="languages-container">
+                                <label><input type="checkbox" name="dubbing" value="عربي"> عربي</label>
+                                <label><input type="checkbox" name="dubbing" value="انجليزي"> انجليزي</label>
+                                <label><input type="checkbox" name="dubbing" value="ياباني"> ياباني</label>
+                                <label><input type="checkbox" name="dubbing" value="فرنسي"> فرنسي</label>
+                                <label><input type="checkbox" name="dubbing" value="ألماني"> ألماني</label>
+                                <label><input type="checkbox" name="dubbing" value="اسباني"> اسباني</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>لغات الترجمة (يمكن اختيار أكثر من واحدة)</label>
+                            <div class="languages-container">
+                                <label><input type="checkbox" name="subtitles" value="عربي"> عربي</label>
+                                <label><input type="checkbox" name="subtitles" value="انجليزي"> انجليزي</label>
+                                <label><input type="checkbox" name="subtitles" value="فرنسي"> فرنسي</label>
+                                <label><input type="checkbox" name="subtitles" value="ألماني"> ألماني</label>
+                                <label><input type="checkbox" name="subtitles" value="اسباني"> اسباني</label>
+                            </div>
+                        </div>
+                        
+                        <h3>روابط التحميل</h3>
+                        
+                        <div class="form-group">
+                            <label>PS4</label>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="psGameLinkEnabled">
+                                <label for="psGameLinkEnabled">تفعيل رابط تحميل اللعبة</label>
+                            </div>
+                            <input type="text" id="psGameLink" class="form-control" placeholder="رابط تحميل اللعبة لـ PS4">
+                            
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="psUpdateLinkEnabled">
+                                <label for="psUpdateLinkEnabled">تفعيل رابط تحميل التحديث</label>
+                            </div>
+                            <input type="text" id="psUpdateLink" class="form-control" placeholder="رابط تحميل التحديث لـ PS4">
+                            
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="psDlcLinkEnabled">
+                                <label for="psDlcLinkEnabled">تفعيل رابط تحميل الإضافات</label>
+                            </div>
+                            <input type="text" id="psDlcLink" class="form-control" placeholder="رابط تحميل الإضافات لـ PS4">
+                            
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="psTranslationLinkEnabled">
+                                <label for="psTranslationLinkEnabled">تفعيل رابط تحميل الترجمة</label>
+                            </div>
+                            <input type="text" id="psTranslationLink" class="form-control" placeholder="رابط تحميل الترجمة لـ PS4">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>PC</label>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="pcGameLinkEnabled">
+                                <label for="pcGameLinkEnabled">تفعيل رابط تحميل اللعبة</label>
+                            </div>
+                            <input type="text" id="pcGameLink" class="form-control" placeholder="رابط تحميل اللعبة لـ PC">
+                            
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="pcUpdateLinkEnabled">
+                                <label for="pcUpdateLinkEnabled">تفعيل رابط تحميل التحديث</label>
+                            </div>
+                            <input type="text" id="pcUpdateLink" class="form-control" placeholder="رابط تحميل التحديث لـ PC">
+                            
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="pcDlcLinkEnabled">
+                                <label for="pcDlcLinkEnabled">تفعيل رابط تحميل الإضافات</label>
+                            </div>
+                            <input type="text" id="pcDlcLink" class="form-control" placeholder="رابط تحميل الإضافات لـ PC">
+                            
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="pcTranslationLinkEnabled">
+                                <label for="pcTranslationLinkEnabled">تفعيل رابط تحميل الترجمة</label>
+                            </div>
+                            <input type="text" id="pcTranslationLink" class="form-control" placeholder="رابط تحميل الترجمة لـ PC">
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button type="submit" class="action-btn edit-btn">حفظ</button>
+                            <button type="button" class="action-btn delete-btn" id="cancelFormBtn">إلغاء</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- نافذة إضافة تحديث -->
+        <div class="modal" id="updateModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">إضافة تحديث للعبة</h2>
+                    <button class="close-btn" id="closeUpdateModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="updateGameSelect">اختر اللعبة</label>
+                        <select id="updateGameSelect" class="form-control">
+                            <!-- سيتم تعبئة الألعاب هنا ديناميكيًا -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="updateVersion">رقم التحديث</label>
+                        <input type="text" id="updateVersion" class="form-control" placeholder="مثال: 1.05">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="updateSize">حجم التحديث (GB)</label>
+                        <input type="number" id="updateSize" class="form-control" placeholder="مثال: 5.2">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="updateLink">رابط التحديث</label>
+                        <input type="text" id="updateLink" class="form-control" placeholder="رابط تحميل التحديث">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="updatePlatform">المنصة</label>
+                        <select id="updatePlatform" class="form-control">
+                            <option value="PS4">PS4</option>
+                            <option value="PC">PC</option>
+                        </select>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="action-btn update-btn" id="confirmUpdateBtn">إضافة التحديث</button>
+                        <button class="action-btn delete-btn" id="cancelUpdateBtn">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- نافذة حذف لعبة -->
+        <div class="modal" id="deleteModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">حذف لعبة</h2>
+                    <button class="close-btn" id="closeDeleteModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>اختر اللعبة التي تريد حذفها:</p>
+                    <select id="deleteGameSelect" class="form-control">
+                        <!-- سيتم تعبئة الألعاب هنا ديناميكيًا -->
+                    </select>
+                    <div class="action-buttons">
+                        <button class="action-btn delete-btn" id="confirmDeleteBtn">حذف</button>
+                        <button class="action-btn edit-btn" id="cancelDeleteBtn">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- نافذة حذف تحديث -->
+        <div class="modal" id="deleteUpdateModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">حذف تحديث</h2>
+                    <button class="close-btn" id="closeDeleteUpdateModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>اختر التحديث الذي تريد حذفه:</p>
+                    <select id="deleteUpdateSelect" class="form-control">
+                        <!-- سيتم تعبئة التحديثات هنا ديناميكيًا -->
+                    </select>
+                    <div class="action-buttons">
+                        <button class="action-btn delete-btn" id="confirmDeleteUpdateBtn">حذف</button>
+                        <button class="action-btn edit-btn" id="cancelDeleteUpdateBtn">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- نافذة إنشاء رمز التنشيط -->
+        <div class="modal" id="codeModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">رمز التنشيط</h2>
+                    <button class="close-btn" id="closeCodeModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>تم إنشاء رمز التنشيط بنجاح. هذا الرمز سيكون نشطًا لمدة شهر واحد.</p>
+                    
+                    <div class="code-display" id="generatedCode">
+                        <!-- سيتم عرض الرمز هنا -->
+                    </div>
+                    
+                    <button class="copy-btn" id="copyCodeBtn">نسخ الرمز</button>
+                    
+                    <div class="code-details">
+                        <div class="detail-row">
+                            <span class="detail-label">تاريخ الإنشاء:</span>
+                            <span id="codeCreationDate"></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">تاريخ الانتهاء:</span>
+                            <span id="codeExpiryDate"></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">الحالة:</span>
+                            <span class="code-status active-status" id="codeStatus">نشط</span>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="action-btn edit-btn" id="closeCodeModalConfirmBtn">تم</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // بيانات المستخدمين
+        const users = JSON.parse(localStorage.getItem('gameUsers')) || [
+            { username: 'admin', password: 'admin123' },
+            { username: 'user', password: 'user123' }
+        ];
+
+        // العناصر الجديدة لنظام الدخول
+        const loginSection = document.getElementById('login-section');
+        const mainSystem = document.getElementById('main-system');
+        const loginForm = document.getElementById('login-form');
+
+        // نظام الدخول
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                // إخفاء شاشة الدخول وإظهار النظام الرئيسي
+                loginSection.classList.add('hidden');
+                mainSystem.classList.remove('hidden');
+                
+                // تهيئة النظام الرئيسي
+                init();
+            } else {
+                alert('اسم المستخدم أو كلمة المرور غير صحيحة');
+            }
+        });
+
+        // الكود الأصلي بالكامل - مع تعديلات نظام التحديثات
+        let games = JSON.parse(localStorage.getItem('ps4Games')) || [];
+        let updates = JSON.parse(localStorage.getItem('gameUpdates')) || [];
+        let activationCodes = JSON.parse(localStorage.getItem('activationCodes')) || [];
+        
+        // العناصر الرئيسية
+        const pages = document.querySelectorAll('.page');
+        const navItems = document.querySelectorAll('.nav-item');
+        const gamesGrid = document.getElementById('gamesGrid');
+        const seriesGrid = document.getElementById('seriesGrid');
+        const updatesGrid = document.getElementById('updatesGrid');
+        const searchInput = document.getElementById('searchInput');
+        
+        // النوافذ المنبثقة
+        const gameModal = document.getElementById('gameModal');
+        const gameFormModal = document.getElementById('gameFormModal');
+        const updateModal = document.getElementById('updateModal');
+        const deleteModal = document.getElementById('deleteModal');
+        const deleteUpdateModal = document.getElementById('deleteUpdateModal');
+        const codeModal = document.getElementById('codeModal');
+        
+        // الأزرار
+        const addGameBtn = document.getElementById('addGameBtn');
+        const deleteGameBtn = document.getElementById('deleteGameBtn');
+        const addUpdateBtn = document.getElementById('addUpdateBtn');
+        const exportDataBtn = document.getElementById('exportDataBtn');
+        const importDataBtn = document.getElementById('importDataBtn');
+        const createCodeBtn = document.getElementById('createCodeBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const closeFormModalBtn = document.getElementById('closeFormModalBtn');
+        const closeUpdateModalBtn = document.getElementById('closeUpdateModalBtn');
+        const closeDeleteModalBtn = document.getElementById('closeDeleteModalBtn');
+        const closeDeleteUpdateModalBtn = document.getElementById('closeDeleteUpdateModalBtn');
+        const closeCodeModalBtn = document.getElementById('closeCodeModalBtn');
+        const closeCodeModalConfirmBtn = document.getElementById('closeCodeModalConfirmBtn');
+        const cancelFormBtn = document.getElementById('cancelFormBtn');
+        const cancelUpdateBtn = document.getElementById('cancelUpdateBtn');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        const confirmUpdateBtn = document.getElementById('confirmUpdateBtn');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const confirmDeleteUpdateBtn = document.getElementById('confirmDeleteUpdateBtn');
+        const cancelDeleteUpdateBtn = document.getElementById('cancelDeleteUpdateBtn');
+        const copyCodeBtn = document.getElementById('copyCodeBtn');
+        const gameForm = document.getElementById('gameForm');
+        const deleteGameSelect = document.getElementById('deleteGameSelect');
+        const updateGameSelect = document.getElementById('updateGameSelect');
+        const deleteUpdateSelect = document.getElementById('deleteUpdateSelect');
+        
+        // رفع الصور
+        const gameImageUpload = document.getElementById('gameImageUpload');
+        const imagePreview = document.getElementById('imagePreview');
+        
+        // التنقل بين الصفحات
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const pageId = item.getAttribute('data-page');
+                
+                // تحديث حالة التنشيط
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                // إظهار الصفحة المطلوبة
+                pages.forEach(page => page.classList.remove('active'));
+                document.getElementById(pageId).classList.add('active');
+                
+                // تحديث المحتوى بناءً على الصفحة
+                if (pageId === 'homePage') {
+                    displayGames(games);
+                } else if (pageId === 'seriesPage') {
+                    displaySeries();
+                } else if (pageId === 'updatesPage') {
+                    displayUpdates();
+                }
+            });
+        });
+        
+        // البحث عن الألعاب
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filteredGames = games.filter(game => 
+                game.name.toLowerCase().includes(searchTerm) || 
+                (game.categories && game.categories.some(cat => cat.toLowerCase().includes(searchTerm)))
+            );
+            displayGames(filteredGames);
+        });
+        
+        // عرض الألعاب
+        function displayGames(gamesToDisplay) {
+            gamesGrid.innerHTML = '';
+            
+            if (gamesToDisplay.length === 0) {
+                gamesGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">لا توجد ألعاب لعرضها</p>';
+                return;
+            }
+            
+            gamesToDisplay.forEach(game => {
+                const gameCard = document.createElement('div');
+                gameCard.className = 'game-card';
+                
+                let updateBadge = '';
+                if (game.hasUpdate) {
+                    updateBadge = '<div class="has-update-badge">!</div>';
+                }
+                
+                gameCard.innerHTML = `
+                    ${updateBadge}
+                    <img src="${game.image}" alt="${game.name}" class="game-cover" onerror="this.src='https://via.placeholder.com/160x220/2d2d2d/ffffff?text=No+Image'">
+                    <div class="game-title">${game.name}</div>
+                `;
+                
+                gameCard.addEventListener('click', () => showGameDetails(game.id));
+                gamesGrid.appendChild(gameCard);
+            });
+        }
+        
+        // عرض السلاسل
+        function displaySeries() {
+            seriesGrid.innerHTML = '';
+            
+            // استخراج السلاسل الفريدة
+            const series = [...new Set(games.map(game => game.series).filter(Boolean))];
+            
+            if (series.length === 0) {
+                seriesGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">لا توجد سلاسل لعرضها</p>';
+                return;
+            }
+            
+            series.forEach(seriesName => {
+                const seriesCard = document.createElement('div');
+                seriesCard.className = 'series-card';
+                seriesCard.innerHTML = `
+                    <div class="series-icon">🧩</div>
+                    <h3>${seriesName}</h3>
+                    <p>${games.filter(game => game.series === seriesName).length} لعبة</p>
+                `;
+                
+                seriesCard.addEventListener('click', () => {
+                    const seriesGames = games.filter(game => game.series === seriesName);
+                    displayGames(seriesGames);
+                    
+                    // الانتقال إلى صفحة البيت
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    document.querySelector('.nav-item[data-page="homePage"]').classList.add('active');
+                    
+                    pages.forEach(page => page.classList.remove('active'));
+                    document.getElementById('homePage').classList.add('active');
+                });
+                
+                seriesGrid.appendChild(seriesCard);
+            });
+        }
+        
+        // عرض التحديثات
+        function displayUpdates() {
+            updatesGrid.innerHTML = '';
+            
+            if (updates.length === 0) {
+                updatesGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">لا توجد تحديثات متاحة</p>';
+                return;
+            }
+            
+            updates.forEach(update => {
+                const updateCard = document.createElement('div');
+                updateCard.className = 'update-card';
+                
+                updateCard.innerHTML = `
+                    <div class="update-version">${update.version}</div>
+                    <img src="${update.gameImage}" alt="${update.gameName}" class="update-cover" onerror="this.src='https://via.placeholder.com/160x220/2d2d2d/ffffff?text=No+Image'">
+                    <div class="update-title">${update.gameName}</div>
+                `;
+                
+                updateCard.addEventListener('click', () => showUpdateDetails(update.id));
+                updatesGrid.appendChild(updateCard);
+            });
+        }
+        
+        // عرض تفاصيل اللعبة
+        function showGameDetails(gameId) {
+            const game = games.find(g => g.id === gameId);
+            if (!game) return;
+            
+            document.getElementById('modalGameTitle').textContent = game.name;
+            
+            // عرض التصنيفات
+            let categoriesHtml = '';
+            if (game.categories && game.categories.length > 0) {
+                categoriesHtml = `<div class="categories-container">${game.categories.map(cat => `<span class="category-tag">${cat}</span>`).join('')}</div>`;
+            }
+            
+            // عرض لغات الدبلجة
+            let dubbingHtml = 'لا توجد';
+            if (game.dubbing && game.dubbing.length > 0) {
+                dubbingHtml = game.dubbing.join('، ');
+            }
+            
+            // عرض لغات الترجمة
+            let subtitlesHtml = 'لا توجد';
+            if (game.subtitles && game.subtitles.length > 0) {
+                subtitlesHtml = game.subtitles.join('، ');
+            }
+            
+            const gameDetails = document.getElementById('gameDetails');
+            gameDetails.innerHTML = `
+                <div class="detail-row">
+                    <span class="detail-label">الوصف:</span>
+                    <span>${game.description || 'لا يوجد وصف'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">التصنيفات:</span>
+                    <span>${categoriesHtml || 'لا توجد'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">المنصة:</span>
+                    <span>${game.platform}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">منظور اللعبة:</span>
+                    <span>${game.perspective || 'غير محدد'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">أسلوب اللعب:</span>
+                    <span>${game.playStyle || 'غير محدد'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">السلسلة:</span>
+                    <span>${game.series || 'لا توجد'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">الدبلجة:</span>
+                    <span>${dubbingHtml}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">الترجمة:</span>
+                    <span>${subtitlesHtml}</span>
+                </div>
+                ${game.platform.includes('PS4') ? `
+                <div class="download-section">
+                    <h3>PS4</h3>
+                    <div class="download-buttons">
+                        ${game.psGameLinkEnabled && game.psGameLink ? `<a href="${game.psGameLink}" target="_blank" class="download-btn">تحميل اللعبة <span>${game.psSize}G</span></a>` : ''}
+                        ${game.psUpdateLinkEnabled && game.psUpdateLink ? `<a href="${game.psUpdateLink}" target="_blank" class="download-btn">تحميل التحديث <span>${game.psUpdateSize || '??'}G</span></a>` : ''}
+                        ${game.psDlcLinkEnabled && game.psDlcLink ? `<a href="${game.psDlcLink}" target="_blank" class="download-btn">تحميل الإضافات</a>` : ''}
+                        ${game.psTranslationLinkEnabled && game.psTranslationLink ? `<a href="${game.psTranslationLink}" target="_blank" class="download-btn">تحميل الترجمة</a>` : ''}
+                    </div>
+                </div>
+                ` : ''}
+                ${game.platform.includes('PC') ? `
+                <div class="download-section">
+                    <h3>PC</h3>
+                    <div class="download-buttons">
+                        ${game.pcGameLinkEnabled && game.pcGameLink ? `<a href="${game.pcGameLink}" target="_blank" class="download-btn">تحميل اللعبة <span>${game.pcSize}G</span></a>` : ''}
+                        ${game.pcUpdateLinkEnabled && game.pcUpdateLink ? `<a href="${game.pcUpdateLink}" target="_blank" class="download-btn">تحميل التحديث <span>${game.pcUpdateSize || '??'}G</span></a>` : ''}
+                        ${game.pcDlcLinkEnabled && game.pcDlcLink ? `<a href="${game.pcDlcLink}" target="_blank" class="download-btn">تحميل الإضافات</a>` : ''}
+                        ${game.pcTranslationLinkEnabled && game.pcTranslationLink ? `<a href="${game.pcTranslationLink}" target="_blank" class="download-btn">تحميل الترجمة</a>` : ''}
+                    </div>
+                </div>
+                ` : ''}
+                <div class="action-buttons">
+                    <button class="action-btn edit-btn" onclick="editGame('${game.id}')">تعديل</button>
+                    <button class="action-btn update-btn" onclick="openUpdateModal('${game.id}')">إضافة تحديث</button>
+                    <button class="action-btn delete-btn" onclick="deleteGame('${game.id}')">حذف</button>
+                </div>
+            `;
+            
+            gameModal.classList.add('active');
+        }
+        
+        // عرض تفاصيل التحديث
+        function showUpdateDetails(updateId) {
+            const update = updates.find(u => u.id === updateId);
+            if (!update) return;
+            
+            const game = games.find(g => g.id === update.gameId);
+            
+            document.getElementById('modalGameTitle').textContent = `${update.gameName} - تحديث ${update.version}`;
+            
+            const gameDetails = document.getElementById('gameDetails');
+            gameDetails.innerHTML = `
+                <div class="detail-row">
+                    <span class="detail-label">اللعبة الأصلية:</span>
+                    <span>${update.gameName}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">رقم التحديث:</span>
+                    <span>${update.version}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">حجم التحديث:</span>
+                    <span>${update.size} جيجابايت</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">المنصة:</span>
+                    <span>${update.platform}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">تاريخ الإضافة:</span>
+                    <span>${new Date(update.dateAdded).toLocaleDateString('ar-EG')}</span>
+                </div>
+                
+                <div class="download-section">
+                    <h3>تحميل التحديث</h3>
+                    <div class="download-buttons">
+                        <a href="${update.link}" target="_blank" class="download-btn">تحميل التحديث <span>${update.size}G</span></a>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-btn delete-btn" onclick="deleteUpdate('${update.id}')">حذف التحديث</button>
+                </div>
+            `;
+            
+            gameModal.classList.add('active');
+        }
+        
+        // إضافة لعبة جديدة
+        addGameBtn.addEventListener('click', () => {
+            document.getElementById('formModalTitle').textContent = 'إضافة لعبة جديدة';
+            gameForm.reset();
+            document.getElementById('gameId').value = '';
+            imagePreview.style.display = 'none';
+            gameFormModal.classList.add('active');
+        });
+        
+        // تعديل لعبة
+        function editGame(gameId) {
+            const game = games.find(g => g.id === gameId);
+            if (!game) return;
+            
+            document.getElementById('formModalTitle').textContent = 'تعديل اللعبة';
+            document.getElementById('gameId').value = game.id;
+            document.getElementById('gameName').value = game.name;
+            document.getElementById('gameImage').value = game.image;
+            document.getElementById('gameDescription').value = game.description || '';
+            document.getElementById('gamePlatform').value = game.platform;
+            document.getElementById('gamePerspective').value = game.perspective || '';
+            document.getElementById('gamePlayStyle').value = game.playStyle || '';
+            document.getElementById('gameSeries').value = game.series || '';
+            document.getElementById('psSize').value = game.psSize || '';
+            document.getElementById('pcSize').value = game.pcSize || '';
+            
+            // عرض الصورة إذا كانت موجودة
+            if (game.image) {
+                imagePreview.src = game.image;
+                imagePreview.style.display = 'block';
+            }
+            
+            // تحديد التصنيفات
+            document.querySelectorAll('input[name="category"]').forEach(checkbox => {
+                checkbox.checked = game.categories && game.categories.includes(checkbox.value);
+            });
+            
+            // تحديد لغات الدبلجة
+            document.querySelectorAll('input[name="dubbing"]').forEach(checkbox => {
+                checkbox.checked = game.dubbing && game.dubbing.includes(checkbox.value);
+            });
+            
+            // تحديد لغات الترجمة
+            document.querySelectorAll('input[name="subtitles"]').forEach(checkbox => {
+                checkbox.checked = game.subtitles && game.subtitles.includes(checkbox.value);
+            });
+            
+            // روابط PS4
+            document.getElementById('psGameLinkEnabled').checked = game.psGameLinkEnabled || false;
+            document.getElementById('psGameLink').value = game.psGameLink || '';
+            document.getElementById('psUpdateLinkEnabled').checked = game.psUpdateLinkEnabled || false;
+            document.getElementById('psUpdateLink').value = game.psUpdateLink || '';
+            document.getElementById('psDlcLinkEnabled').checked = game.psDlcLinkEnabled || false;
+            document.getElementById('psDlcLink').value = game.psDlcLink || '';
+            document.getElementById('psTranslationLinkEnabled').checked = game.psTranslationLinkEnabled || false;
+            document.getElementById('psTranslationLink').value = game.psTranslationLink || '';
+            
+            // روابط PC
+            document.getElementById('pcGameLinkEnabled').checked = game.pcGameLinkEnabled || false;
+            document.getElementById('pcGameLink').value = game.pcGameLink || '';
+            document.getElementById('pcUpdateLinkEnabled').checked = game.pcUpdateLinkEnabled || false;
+            document.getElementById('pcUpdateLink').value = game.pcUpdateLink || '';
+            document.getElementById('pcDlcLinkEnabled').checked = game.pcDlcLinkEnabled || false;
+            document.getElementById('pcDlcLink').value = game.pcDlcLink || '';
+            document.getElementById('pcTranslationLinkEnabled').checked = game.pcTranslationLinkEnabled || false;
+            document.getElementById('pcTranslationLink').value = game.pcTranslationLink || '';
+            
+            gameModal.classList.remove('active');
+            gameFormModal.classList.add('active');
+        }
+        
+        // حفظ اللعبة (إضافة أو تعديل)
+        gameForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const gameId = document.getElementById('gameId').value;
+            
+            // جمع التصنيفات المحددة
+            const selectedCategories = [];
+            document.querySelectorAll('input[name="category"]:checked').forEach(checkbox => {
+                selectedCategories.push(checkbox.value);
+            });
+            
+            // جمع لغات الدبلجة المحددة
+            const selectedDubbing = [];
+            document.querySelectorAll('input[name="dubbing"]:checked').forEach(checkbox => {
+                selectedDubbing.push(checkbox.value);
+            });
+            
+            // جمع لغات الترجمة المحددة
+            const selectedSubtitles = [];
+            document.querySelectorAll('input[name="subtitles"]:checked').forEach(checkbox => {
+                selectedSubtitles.push(checkbox.value);
+            });
+            
+            const gameData = {
+                id: gameId || generateId(),
+                name: document.getElementById('gameName').value,
+                image: document.getElementById('gameImage').value,
+                description: document.getElementById('gameDescription').value,
+                categories: selectedCategories,
+                platform: document.getElementById('gamePlatform').value,
+                perspective: document.getElementById('gamePerspective').value,
+                playStyle: document.getElementById('gamePlayStyle').value,
+                series: document.getElementById('gameSeries').value,
+                psSize: document.getElementById('psSize').value,
+                pcSize: document.getElementById('pcSize').value,
+                dubbing: selectedDubbing,
+                subtitles: selectedSubtitles,
+                
+                // روابط PS4
+                psGameLinkEnabled: document.getElementById('psGameLinkEnabled').checked,
+                psGameLink: document.getElementById('psGameLink').value,
+                psUpdateLinkEnabled: document.getElementById('psUpdateLinkEnabled').checked,
+                psUpdateLink: document.getElementById('psUpdateLink').value,
+                psDlcLinkEnabled: document.getElementById('psDlcLinkEnabled').checked,
+                psDlcLink: document.getElementById('psDlcLink').value,
+                psTranslationLinkEnabled: document.getElementById('psTranslationLinkEnabled').checked,
+                psTranslationLink: document.getElementById('psTranslationLink').value,
+                
+                // روابط PC
+                pcGameLinkEnabled: document.getElementById('pcGameLinkEnabled').checked,
+                pcGameLink: document.getElementById('pcGameLink').value,
+                pcUpdateLinkEnabled: document.getElementById('pcUpdateLinkEnabled').checked,
+                pcUpdateLink: document.getElementById('pcUpdateLink').value,
+                pcDlcLinkEnabled: document.getElementById('pcDlcLinkEnabled').checked,
+                pcDlcLink: document.getElementById('pcDlcLink').value,
+                pcTranslationLinkEnabled: document.getElementById('pcTranslationLinkEnabled').checked,
+                pcTranslationLink: document.getElementById('pcTranslationLink').value
+            };
+            
+            if (gameId) {
+                // تعديل لعبة موجودة
+                const index = games.findIndex(g => g.id === gameId);
+                if (index !== -1) {
+                    games[index] = gameData;
+                }
+            } else {
+                // إضافة لعبة جديدة
+                games.push(gameData);
+            }
+            
+            saveGames();
+            displayGames(games);
+            gameFormModal.classList.remove('active');
+        });
+        
+        // فتح نافذة إضافة تحديث
+        function openUpdateModal(gameId = null) {
+            updateGameSelect.innerHTML = '';
+            games.forEach(game => {
+                const option = document.createElement('option');
+                option.value = game.id;
+                option.textContent = game.name;
+                if (gameId && game.id === gameId) {
+                    option.selected = true;
+                }
+                updateGameSelect.appendChild(option);
+            });
+            
+            updateModal.classList.add('active');
+            if (gameModal.classList.contains('active')) {
+                gameModal.classList.remove('active');
+            }
+        }
+        
+        addUpdateBtn.addEventListener('click', () => {
+            openUpdateModal();
+        });
+        
+        // إضافة تحديث للعبة
+        confirmUpdateBtn.addEventListener('click', () => {
+            const gameId = updateGameSelect.value;
+            const updateVersion = document.getElementById('updateVersion').value;
+            const updateSize = document.getElementById('updateSize').value;
+            const updateLink = document.getElementById('updateLink').value;
+            const updatePlatform = document.getElementById('updatePlatform').value;
+            
+            if (!gameId || !updateVersion || !updateSize || !updateLink) {
+                alert('يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            const game = games.find(g => g.id === gameId);
+            if (game) {
+                // إنشاء كائن تحديث جديد
+                const update = {
+                    id: generateId(),
+                    gameId: gameId,
+                    gameName: game.name,
+                    gameImage: game.image,
+                    version: updateVersion,
+                    size: updateSize,
+                    link: updateLink,
+                    platform: updatePlatform,
+                    dateAdded: new Date().toISOString()
+                };
+                
+                // إضافة التحديث إلى مصفوفة التحديثات
+                updates.push(update);
+                localStorage.setItem('gameUpdates', JSON.stringify(updates));
+                
+                updateModal.classList.remove('active');
+                alert('تم إضافة التحديث بنجاح!');
+                
+                // إذا كانت صفحة التحديثات نشطة، قم بتحديث العرض
+                if (document.getElementById('updatesPage').classList.contains('active')) {
+                    displayUpdates();
+                }
+            }
+        });
+        
+        // حذف لعبة
+        deleteGameBtn.addEventListener('click', () => {
+            deleteGameSelect.innerHTML = '';
+            games.forEach(game => {
+                const option = document.createElement('option');
+                option.value = game.id;
+                option.textContent = game.name;
+                deleteGameSelect.appendChild(option);
+            });
+            
+            deleteModal.classList.add('active');
+        });
+        
+        function deleteGame(gameId) {
+            games = games.filter(game => game.id !== gameId);
+            saveGames();
+            displayGames(games);
+            if (gameModal.classList.contains('active')) {
+                gameModal.classList.remove('active');
+            }
+        }
+        
+        confirmDeleteBtn.addEventListener('click', () => {
+            const gameId = deleteGameSelect.value;
+            if (gameId) {
+                deleteGame(gameId);
+                deleteModal.classList.remove('active');
+            }
+        });
+        
+        // حذف تحديث
+        function deleteUpdate(updateId) {
+            updates = updates.filter(update => update.id !== updateId);
+            localStorage.setItem('gameUpdates', JSON.stringify(updates));
+            displayUpdates();
+            gameModal.classList.remove('active');
+        }
+        
+        // تصدير البيانات
+        exportDataBtn.addEventListener('click', () => {
+            const data = {
+                games: games,
+                updates: updates,
+                activationCodes: activationCodes
+            };
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'ps4_games_backup.json';
+            link.click();
+            
+            URL.revokeObjectURL(url);
+        });
+        
+        // استيراد البيانات
+        importDataBtn.addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const importedData = JSON.parse(event.target.result);
+                        if (Array.isArray(importedData)) {
+                            // دعم الملفات القديمة
+                            games = importedData;
+                        } else if (importedData.games && importedData.updates) {
+                            // دعم الملفات الجديدة
+                            games = importedData.games;
+                            updates = importedData.updates;
+                            activationCodes = importedData.activationCodes || [];
+                        } else {
+                            alert('ملف غير صالح. يرجى اختيار ملف JSON صحيح.');
+                            return;
+                        }
+                        
+                        saveGames();
+                        localStorage.setItem('gameUpdates', JSON.stringify(updates));
+                        localStorage.setItem('activationCodes', JSON.stringify(activationCodes));
+                        displayGames(games);
+                        alert('تم استيراد البيانات بنجاح!');
+                    } catch (error) {
+                        alert('خطأ في قراءة الملف. يرجى التأكد من صحة الملف.');
+                    }
+                };
+                reader.readAsText(file);
+            });
+            
+            input.click();
+        });
+        
+        // إنشاء رمز التنشيط
+        createCodeBtn.addEventListener('click', () => {
+            // إنشاء رمز عشوائي مكون من 16 حرفًا
+            const code = generateActivationCode();
+            const creationDate = new Date();
+            const expiryDate = new Date();
+            expiryDate.setMonth(expiryDate.getMonth() + 1); // إضافة شهر واحد
+            
+            // حفظ الرمز في قاعدة البيانات
+            const activationCode = {
+                id: generateId(),
+                code: code,
+                creationDate: creationDate.toISOString(),
+                expiryDate: expiryDate.toISOString(),
+                isActive: true
+            };
+            
+            activationCodes.push(activationCode);
+            localStorage.setItem('activationCodes', JSON.stringify(activationCodes));
+            
+            // عرض الرمز في النافذة المنبثقة
+            document.getElementById('generatedCode').textContent = code;
+            document.getElementById('codeCreationDate').textContent = creationDate.toLocaleDateString('ar-EG');
+            document.getElementById('codeExpiryDate').textContent = expiryDate.toLocaleDateString('ar-EG');
+            
+            codeModal.classList.add('active');
+        });
+        
+        // نسخ الرمز إلى الحافظة
+        copyCodeBtn.addEventListener('click', () => {
+            const code = document.getElementById('generatedCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('تم نسخ الرمز إلى الحافظة!');
+            }).catch(err => {
+                console.error('فشل في نسخ الرمز: ', err);
+            });
+        });
+        
+        // وظيفة لإنشاء رمز تنشيط عشوائي
+        function generateActivationCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 16; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+                if ((i + 1) % 4 === 0 && i !== 15) {
+                    result += '-';
+                }
+            }
+            return result;
+        }
+        
+        // وظيفة للتحقق من صلاحية الرموز
+        function checkActivationCodes() {
+            const now = new Date();
+            activationCodes.forEach(code => {
+                if (new Date(code.expiryDate) < now) {
+                    code.isActive = false;
+                }
+            });
+            localStorage.setItem('activationCodes', JSON.stringify(activationCodes));
+        }
+        
+        // رفع الصور ومعاينتها
+        gameImageUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    imagePreview.src = event.target.result;
+                    imagePreview.style.display = 'block';
+                    document.getElementById('gameImage').value = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // إغلاق النوافذ
+        closeModalBtn.addEventListener('click', () => gameModal.classList.remove('active'));
+        closeFormModalBtn.addEventListener('click', () => gameFormModal.classList.remove('active'));
+        closeUpdateModalBtn.addEventListener('click', () => updateModal.classList.remove('active'));
+        closeDeleteModalBtn.addEventListener('click', () => deleteModal.classList.remove('active'));
+        closeDeleteUpdateModalBtn.addEventListener('click', () => deleteUpdateModal.classList.remove('active'));
+        closeCodeModalBtn.addEventListener('click', () => codeModal.classList.remove('active'));
+        closeCodeModalConfirmBtn.addEventListener('click', () => codeModal.classList.remove('active'));
+        cancelFormBtn.addEventListener('click', () => gameFormModal.classList.remove('active'));
+        cancelUpdateBtn.addEventListener('click', () => updateModal.classList.remove('active'));
+        cancelDeleteBtn.addEventListener('click', () => deleteModal.classList.remove('active'));
+        cancelDeleteUpdateBtn.addEventListener('click', () => deleteUpdateModal.classList.remove('active'));
+        
+        // النقر خارج النافذة لإغلاقها
+        window.addEventListener('click', (e) => {
+            if (e.target === gameModal) gameModal.classList.remove('active');
+            if (e.target === gameFormModal) gameFormModal.classList.remove('active');
+            if (e.target === updateModal) updateModal.classList.remove('active');
+            if (e.target === deleteModal) deleteModal.classList.remove('active');
+            if (e.target === deleteUpdateModal) deleteUpdateModal.classList.remove('active');
+            if (e.target === codeModal) codeModal.classList.remove('active');
+        });
+        
+        // وظائف مساعدة
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+        
+        function saveGames() {
+            localStorage.setItem('ps4Games', JSON.stringify(games));
+        }
+        
+        // تهيئة التطبيق
+        function init() {
+            displayGames(games);
+            displayUpdates();
+            checkActivationCodes(); // التحقق من صلاحية الرموز عند بدء التشغيل
+            
+            // إضافة بعض الألعاب الافتراضية إذا لم تكن هناك ألعاب
+            if (games.length === 0) {
+                const defaultGames = [
+                    {
+                        id: generateId(),
+                        name: 'God of War',
+                        image: 'https://image.api.playstation.com/vulcan/img/rnd/202010/2217/LsaRVLF2IU2L1FNtyJdM4qgP.png',
+                        description: 'انضم إلى كريتوس وأتروس في رحلة ملحمية عبر الممالك الأسطورية للآلهة الإسكندنافية.',
+                        categories: ['اكشن', 'مغامرات'],
+                        platform: 'PS4',
+                        perspective: 'ثالث شخص',
+                        playStyle: 'مغامرة قصصية',
+                        series: 'God of War',
+                        psSize: 45,
+                        dubbing: ['انجليزي'],
+                        subtitles: ['عربي', 'انجليزي'],
+                        psGameLinkEnabled: true,
+                        psGameLink: '#',
+                        psUpdateLinkEnabled: false,
+                        psDlcLinkEnabled: false,
+                        psTranslationLinkEnabled: false,
+                        hasUpdate: false
+                    },
+                    {
+                        id: generateId(),
+                        name: 'The Last of Us Part II',
+                        image: 'https://image.api.playstation.com/vulcan/ap/rnd/202010/0222/A0dD9msotpY2bShSLXRFM4w7.png',
+                        description: 'تابع رحلة إيلي في عالم ما بعد الوباء بحثًا عن الانتقام.',
+                        categories: ['اكشن', 'مغامرات', 'رعب'],
+                        platform: 'PS4',
+                        perspective: 'ثالث شخص',
+                        playStyle: 'مغامرة قصصية',
+                        series: 'The Last of Us',
+                        psSize: 78,
+                        dubbing: ['انجليزي'],
+                        subtitles: ['عربي', 'انجليزي'],
+                        psGameLinkEnabled: true,
+                        psGameLink: '#',
+                        psUpdateLinkEnabled: false,
+                        psDlcLinkEnabled: false,
+                        psTranslationLinkEnabled: false,
+                        hasUpdate: false
+                    }
+                ];
+                
+                games = defaultGames;
+                saveGames();
+                displayGames(games);
+            }
+        }
+    </script>
+</body>
+</html>
